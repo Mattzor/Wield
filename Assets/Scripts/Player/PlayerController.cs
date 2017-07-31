@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     bool forward = true;
     bool runningMode = true;
 
-    bool moving;
+    public bool moving;
     float moveSpeed;
 
     // All sounds for the player and the index for the specific sounds
@@ -37,26 +37,29 @@ public class PlayerController : MonoBehaviour
         sounds = GetComponents<AudioSource>();
         moveSpeed = runSpeed;
       
+		anim ["swordStrike2"].wrapMode = WrapMode.Once;
+		anim["swordStrike2"].speed = 2f;
         anim["strafeLeft"].speed = 1.7f;
         anim["strafeRight"].speed = 1.7f;
+		anim ["die2"].wrapMode = WrapMode.Once;
     }
 
     void FixedUpdate()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
         if (isAlive)
         {
-            Move();
-            Attack();
+			Attack();
+			if (!isAttacking) {
+				Move();
+			}
+            
+			Turn ();            
             PlaySounds();
         }
         else
         {
             Die();
-        }
-        //Animating(h, v);
+        }        
     }
 
     void Move()
@@ -69,7 +72,7 @@ public class PlayerController : MonoBehaviour
             ChangeMoveSpeed();
         }
         /* Move forward */
-        if (Input.GetKey(KeyCode.W) && !isAttacking)
+        if (Input.GetKey(KeyCode.W))
         {
             if (running)
             {
@@ -92,7 +95,7 @@ public class PlayerController : MonoBehaviour
 
         }
         /* Move backwards */
-        else if (Input.GetKey(KeyCode.S) && !isAttacking)
+        else if (Input.GetKey(KeyCode.S))
         {
             movement = -transform.forward * walkSpeed * Time.deltaTime;
             playerRigidbody.MovePosition(position + movement);
@@ -105,7 +108,7 @@ public class PlayerController : MonoBehaviour
             moving = true;
         }
         /* Strafe left */
-        else if (Input.GetKey(KeyCode.A) && Input.GetMouseButton(1) && !isAttacking)
+        else if (Input.GetKey(KeyCode.A) && Input.GetMouseButton(1))
         {
             movement = -transform.right * moveSpeed * Time.deltaTime;
             playerRigidbody.MovePosition(position + movement);
@@ -114,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
         }
         /* Strafe right */
-        else if (Input.GetKey(KeyCode.D) && Input.GetMouseButton(1) && !isAttacking)
+        else if (Input.GetKey(KeyCode.D) && Input.GetMouseButton(1))
         {
             movement = transform.right * moveSpeed * Time.deltaTime;
             playerRigidbody.MovePosition(position + movement);
@@ -124,43 +127,47 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+			
             moving = false;
         }
-        /* Turning left/right */
-        float x = 0;
-
-        if (Input.GetAxis("Horizontal") != 0)
-        {
-            x = Input.GetAxis("Horizontal") * 2;
-        }
-        if (Input.GetMouseButton(1))
-        {
-            x = Input.GetAxis("Mouse X") * turnSpeed * 1;
-        }
-        transform.Rotate(0, x, 0);
-        if (!moving)
-        {
-            anim.CrossFade("idle");
-        }
-        else
-        {
-            isAttacking = false;
-        }
+		if (!moving && !isAttacking)
+		{
+			anim.CrossFade("idle");
+		}
+        
     }
+
+	void Turn(){
+		/* Turning left/right */
+		float x = 0;
+
+		if (Input.GetAxis("Horizontal") != 0)
+		{
+			x = Input.GetAxis("Horizontal") * 2;
+		}
+		if (Input.GetMouseButton(1))
+		{
+			x = Input.GetAxis("Mouse X") * turnSpeed * 1;
+		}
+		transform.Rotate(0, x, 0);
+	}
 
     void Attack()
     {
         if (Input.GetKey(KeyCode.E))
-        {
-            //anim.Play("swordStrike2");
-            anim["swordStrike2"].speed = 2f;
+        {                        
             anim.CrossFade("swordStrike2");
             isAttacking = true;
-        }
-        else
+			moving = false;
+		}else if (isAttacking){ // && anim ["swordStrike2"].length <= anim ["swordStrike2"].time-0.2) {
+			isAttacking = false;
+			moving = false;
+			anim.CrossFade("idle");
+		}
+		/*if(!anim.IsPlaying("swordStrike2"))
         {
             isAttacking = false;
-        }
+        }*/
     }
 
     public void PlaySounds()
@@ -191,9 +198,11 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        isAlive = false;
-        anim.Play("die2");        
-        Destroy(gameObject, 3);
+		if (isAlive) {
+			isAlive = false;
+			anim.Play ("die2");        
+			Destroy (gameObject, 3);
+		}
     }
 
     void Animate()
@@ -201,12 +210,6 @@ public class PlayerController : MonoBehaviour
 
     }
 
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     void ChangeMoveSpeed()
     {

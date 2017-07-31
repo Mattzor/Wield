@@ -21,6 +21,9 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
+		if (player == null) {
+			return;
+		}
         if (Input.GetMouseButton(1))
         {
             //transform.position = transform.position - new Vector3(0, t, t);

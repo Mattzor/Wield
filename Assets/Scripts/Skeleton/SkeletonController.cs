@@ -5,6 +5,7 @@ using UnityEngine;
 public class SkeletonController : MonoBehaviour
 {
     public Transform playerTransform;
+	public bool playerDead;
     public float walkSpeed;
     public float runSpeed;
 
@@ -28,19 +29,20 @@ public class SkeletonController : MonoBehaviour
     {
         if (anim.GetBool("isAlive"))
         {
-            if (playerTransform != null)
+			if (playerTransform != null) {
+				if (anim.GetBool ("playerInRange")) {
+					Attack ();
+				} else {
+					ChasePlayer ();
+				}
+			} else if (playerDead) {
+				anim.SetBool ("playerInRange", false);
+				anim.SetBool ("Aggro", false);
+				playerDead = false;
+			}
+			else
             {
-                if (anim.GetBool("playerInRange"))
-                {
-                    Attack();
-                }
-                else
-                {
-                    ChasePlayer();
-                }
-            }
-            else
-            {
+				
                 Move();
             }
         }

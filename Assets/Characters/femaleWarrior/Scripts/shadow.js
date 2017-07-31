@@ -18,6 +18,7 @@ function Start(){
 function LateUpdate () {
 
 	//Shadow position.
+	if(transform != null && castingPoint != null){
 	transform.position = castingPoint.position;
 	var hits : RaycastHit[];
 	hits = Physics.RaycastAll(transform.position + Vector3.up*0.5, -Vector3.up);
@@ -49,4 +50,5 @@ function LateUpdate () {
 	opacity *= multiplier;
 	GetComponent.<Renderer>().material.color.a = opacity;
 	//renderer.material.GetColor("_Color").a = opacity;
+	}
 }
