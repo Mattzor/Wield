@@ -15,7 +15,7 @@ public class SkeletonSwordCollider : MonoBehaviour {
     {
 		if (other.tag == "Player" && anim.GetBool("isAlive"))
         {
-            other.transform.GetComponent<PlayerHealth>().TakeDamage(10);
+			other.transform.GetComponent<PlayerHealth>().TakeDamage(Random.Range(5,7));
         }
 
     }

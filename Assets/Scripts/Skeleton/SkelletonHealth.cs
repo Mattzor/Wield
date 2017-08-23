@@ -25,14 +25,8 @@ public class SkelletonHealth : MonoBehaviour {
         //anim.SetBool("isIdle", false);
         anim.SetBool("isAlive", false);
         anim.SetTrigger("die");
-		if (gameController != null) {
-			gameController.GetComponent<GameController> ().SkeletonDecrease ();
-		}
+
         Destroy(gameObject, 3);
     }
-
-	public void SetGamecontroller(GameObject controller){
-		gameController = controller;
-	}
 
 }

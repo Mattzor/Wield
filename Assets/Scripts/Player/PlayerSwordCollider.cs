@@ -4,33 +4,48 @@ using UnityEngine;
 
 public class PlayerSwordCollider : MonoBehaviour {
 
-    public float damage;
+    public float damageMin;
+	public float damageMax;
+	public float damageCriticalStrike;
+	private float damage;
 
     Transform playerTransform;
+	CapsuleCollider swordCapsule;
+	PlayerController pc;
 
     void Start()
     {
         playerTransform = transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent.transform.parent;
+		swordCapsule = transform.GetComponent<CapsuleCollider> ();
+		pc = playerTransform.GetComponent<PlayerController> ();
+
     }
 
 	void Update(){
-		if (playerTransform.GetComponent<PlayerController> ().isAttacking) {
-			transform.GetComponent<CapsuleCollider> ().enabled = true;		
+		if (pc.isAttacking) {
+			swordCapsule.enabled = true;		
 		} else {
-			transform.GetComponent<CapsuleCollider> ().enabled = false;		
+			swordCapsule.enabled = false;		
 		}
 	}
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "SkeletonEnemy" && playerTransform.GetComponent<PlayerController>().isAttacking)
-        {
-            other.transform.parent.parent.GetComponent<SkelletonHealth>().TakeDamage(damage);
+		int i = Random.Range (1, 6);
+		if(i==5){
+			damage = damageCriticalStrike;
+		}else{
+			damage = Random.Range (damageMin, damageMax);
+		}
+
+		if (other.tag == "SkeletonEnemy" && pc.isAttacking) {
+			other.transform.parent.parent.GetComponent<SkelletonHealth> ().TakeDamage (damage);
             
-        }else if(other.tag == "MonsterEnemy" && playerTransform.GetComponent<PlayerController>().isAttacking)
-        {
-            //Destroy(other.transform.gameObject, 1);
-			other.transform.GetComponent<MonsterHealth>().TakeDamage(damage);
-        }
+		} else if (other.tag == "MonsterEnemy" && pc.isAttacking) {
+			//Destroy(other.transform.gameObject, 1);
+			other.transform.GetComponent<MonsterHealth> ().TakeDamage (damage);
+		} else if (other.tag == "DemonEnemy" && pc.isAttacking) {
+			other.transform.GetComponent<Demon_Health> ().TakeDamage (damage);
+		}
     }
 }

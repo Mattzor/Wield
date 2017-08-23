@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
-    public float turnSpeed = 10f;
-    public float walkSpeed = 2f;
-    public float runSpeed = 10f;
+	public float turnSpeed;
+    public float walkSpeed;
+    public float runSpeed;
 
     public bool isAlive = true;
     public bool isAttacking = false;
@@ -59,7 +59,8 @@ public class PlayerController : MonoBehaviour
         else
         {
             Die();
-        }        
+        }
+		
     }
 
     void Move()
@@ -201,8 +202,9 @@ public class PlayerController : MonoBehaviour
 		if (isAlive) {
 			isAlive = false;
 			anim.Play ("die2");        
-			Destroy (gameObject, 3);
+			//Destroy (gameObject, 3);
 		}
+
     }
 
     void Animate()
